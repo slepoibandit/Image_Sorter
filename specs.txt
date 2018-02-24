@@ -1,0 +1,13 @@
+General concept:
+Sort images in the specified folder into different folders, based on their name content frequencies. If -i argument is passed, express to the user what is being done on each of the steps.
+
+Algorithm:
+1. Read the names of all the image files in the folder and save them to the list;
+2. In the saved list separate different words in the file name with newline using symbols, numbers and capitalization as delimeters;
+3. Lowercase all the names and exclude extensions;
+4. Remove invalid names consisting of one and two letters (e.g. "a", "bc" etc.). 
+5. Build a word frequency list, removing occuring duplicates, the format is: "word - frequency" (e.g. wolf - 5);
+6. Sort lines based on a frequency number;
+7. Create folders for names, occuring more than 1 time in the list;
+8. Move images to corresponding folders starting from the top of the list (i.e. word with the highest frequency) to the bottom of the list (i.e. word with the lowest frequency). Thus, conflicting terms in the file names are resolved by giving the priority to the most frequent in the folder.
+9. Tell the user, that the operation was done succesfully or print the error in case of failure.

@@ -1,0 +1,4 @@
+1) Make script recursive (i.e. work in created subdirectories);
+2) Let the user choose the root directory;
+3) Let the user choose verbose and interactive options;
+4) Recovery ability/backup for misbehaved script cases;

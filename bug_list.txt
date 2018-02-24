@@ -1,0 +1,4 @@
+1) Special symbols get their folders (e.g. ')' and ',');
+2) Service word get their folder (e.g. "and" "the");
+3) Symbols at the start of the file names break the flow of the script;
+4) Script functions in CURRENT WORKING DIRECTORY, despite its own position;
