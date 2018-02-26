@@ -45,7 +45,7 @@ fi
 #bug: hyphen at the start of the names seems to break the script!
 #replace symbols, numbers and extensions with newlines
 sed -i -r -e 's/\.(jpg|jpeg|png|gif)//gi' saved_list.txt #strip extensions
-sed -i -r -e 's/(\-|\_|[0-9])/\n/gi' saved_list.txt #break by symbols and numbers delimeters to newlines
+sed -i -r -e 's/(\-|_|[0-9]|\&)/\n/gi' saved_list.txt #break by symbols and numbers delimeters to newlines
 sed -i -r -e '/^\s*$/d' saved_list.txt #clean up whitespaces
 sed -i -r -e 's/./\L&/gi' saved_list.txt #lowercase all letters
 sed -i -r -e '/\b.{1,2}\b/d' saved_list.txt #remove 1-2 lettered words
@@ -58,19 +58,22 @@ sort -n -r -o saved_list.txt freq_list.txt #sort words based on frequencies
 #create folders based on the generated freq list
 INCREM=1
 while [[ $(sed -n -e ${INCREM}p saved_list.txt) ]]; do
-  mkdir -p $(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')
+  WORDFROMLIST=$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')
+  mkdir -p $WORDFROMLIST
   INCREM=$((INCREM+1))
 done
-
+unset WORDFROMLIST
 #sort images into folders starting with the most frequent filenames
 INCREM=1
 while [[ $(sed -n -e ${INCREM}p saved_list.txt) ]]; do
-  mv -i -v -t $(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi') *$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')*.jpg
-  mv -i -v -t $(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi') *$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')*.jpeg
-  mv -i -v -t $(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi') *$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')*.png
-  mv -i -v -t $(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi') *$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')*.gif
+  WORDFROMLIST=$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')
+  mv -i -v -t $WORDFROMLIST $(ls *.jpg | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST") # doesn't move original files
+  mv -i -v -t $WORDFROMLIST $(ls *.jpeg | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST") #BUGGG
+  mv -i -v -t $WORDFROMLIST $(ls *.png | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST")
+  mv -i -v -t $WORDFROMLIST $(ls *.gif | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST")
   INCREM=$((INCREM+1))
 done
+unset WORDFROMLIST
 #clean up empty directories, that have lost the contest (e.g. animal folder over wolf folder in animal-wolf.jpg due to higher frequency of animal folder)
 ls --file-type --ignore="*.*" | grep "/" > deleted.txt #keep a list of all items that were removed for future optimizations
 rm -d -f $(ls --file-type --ignore="*.*" | grep "/") #WARNING! EXPERIMENTAL, COULD LOSE FILES
