@@ -2,3 +2,4 @@
 2) Service word get their folder (e.g. "and" "the");
 3) Symbols at the start of the file names break the flow of the script;
 4) Script functions in CURRENT WORKING DIRECTORY, despite its own position;
+5) Lowercase and uppercase letters get interpreted differently (i.e. images with corresponding names but with different case do not get moved);
