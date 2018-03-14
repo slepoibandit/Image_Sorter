@@ -22,7 +22,6 @@ function removeTechnicalWords() {
     touch ${SCRIPT_PATH}/exclusion_list.txt
     echo "The exclusion list was not found, so the exclusion_list.txt was created automatically. Please update it manually to get better results."
   fi
-
   # exlude all the technical words from saved_list based on information from exclusion_list
   INCREM=1
   while [[ $(sed -n -e ${INCREM}p ${SCRIPT_PATH}/exclusion_list.txt) ]]; do
@@ -71,25 +70,25 @@ function createFolders() {
 
 function sortImages() {
   #sort images into folders starting with the most frequent filenames
+  shopt -s nocaseglob #set nocase to sort case-insensitive
   INCREM=1
   while [[ $(sed -n -e ${INCREM}p saved_list.txt) ]]; do
     WORDFROMLIST=$(sed -n -e ${INCREM}p saved_list.txt | sed -r -e 's/([0-9]|\s)//gi')
-    mv -i -v -t $WORDFROMLIST $(ls *.jpg | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST") # doesn't move original files
-    mv -i -v -t $WORDFROMLIST $(ls *.jpeg | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST") #BUGGG
-    mv -i -v -t $WORDFROMLIST $(ls *.png | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST")
-    mv -i -v -t $WORDFROMLIST $(ls *.gif | sed -r -e 's/([0-9]|_)/\t/gi' | grep -iw "$WORDFROMLIST")
+    mv -i -v -t $WORDFROMLIST *$WORDFROMLIST*.{jpg,jpeg,png,gif}
     INCREM=$((INCREM+1))
   done
   unset INCREM
   unset WORDFROMLIST
+  shopt -u nocaseglob #set case-sensitivity back to default
   #clean up empty directories, that have lost the contest (e.g. animal folder over wolf folder in animal-wolf.jpg due to higher frequency of animal folder)
   ls --file-type --ignore="*.*" | grep "/" > deleted.txt #keep a list of all items that were removed for future optimizations
   rm -d -f $(ls --file-type --ignore="*.*" | grep "/") #WARNING! EXPERIMENTAL, COULD LOSE FILES
 }
 
-saveImagesList;
-buildFrequencies;
-
+saveImagesList
+buildFrequencies
+createFolders
+sortImages
 # #delete all temporary files
 # rm -f freq_list.txt
 # rm -f saved_list.txt
